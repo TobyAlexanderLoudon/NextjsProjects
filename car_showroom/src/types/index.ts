@@ -28,13 +28,13 @@ export interface HomeProps {
 }
 
 export interface CarCardProps {
-  model: string;
-  make: string;
-  mpg: number;
-  transmission: string;
-  year: number;
-  drive: string;
-  cityMPG: number;
+    car: CarProps;
+}
+
+export interface CarDetailsProps {
+    car: CarProps;
+    isOpen: boolean;
+    closeModal: () => void
 }
 
 export interface CustomButtonProps {

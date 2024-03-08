@@ -1,13 +1,21 @@
 import CustomButton from './CustomButton';
-import { CustomFilter, SearchBar } from '.';
+import { CustomFilter, SearchBar, ShowMore } from '.';
 import { fetchCars } from '@/utils';
 import CarCard from './CarCard';
+import { HomeProps } from '@/types';
+import { fuels, yearsOfProduction } from '@/constants';
 
-const CarCatalogue = async () => {
-  const cars = await fetchCars();
+const CarCatalogue = async ({ searchParams }: HomeProps) => {
+  const filters = {
+    manufacturer: searchParams?.manufacturer || 'ford',
+    model: searchParams?.model || '',
+    year: searchParams?.year || 2022,
+    fuel: searchParams?.fuel || '',
+    limit: searchParams?.limit || 10,
+  };
+
+  const cars = await fetchCars(filters);
   const isCarsEmpty = cars.length === 0 || !Array.isArray(cars) || !cars;
-
-  console.log(cars);
 
   return (
     <div id="discover" className="mt-12 padding-x padding-y max-width">
@@ -20,8 +28,8 @@ const CarCatalogue = async () => {
         <SearchBar />
 
         <div className="home__filter-container">
-          <CustomFilter title="fuel" options={[]} />
-          <CustomFilter title="year" options={[]} />
+          <CustomFilter title="fuel" options={fuels} />
+          <CustomFilter title="year" options={yearsOfProduction} />
         </div>
       </div>
 
@@ -29,17 +37,14 @@ const CarCatalogue = async () => {
         <section>
           <div className="home__cars-wrapper">
             {cars.map((car) => (
-              <CarCard
-                model={car.model}
-                make={car.make}
-                mpg={car.combination_mpg}
-                transmission={car.transmission}
-                year={car.year}
-                drive={car.drive}
-                cityMPG={car.city_mpg}
-              />
+              <CarCard car={car} />
             ))}
           </div>
+
+          <ShowMore
+            pageNumber={searchParams.limit || 10 / 10}
+            isNext={(searchParams.limit || 10) > cars.length}
+          />
         </section>
       ) : (
         <div className="home__error-container">
